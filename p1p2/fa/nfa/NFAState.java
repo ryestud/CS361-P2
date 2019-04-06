@@ -4,11 +4,12 @@ import fa.State;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class NFAState extends State{
 
-    private HashMap<Character,NFAState> delta;//delta
+    private HashMap<Character,HashSet<NFAState>> delta;//delta
     private boolean isFinal;//remembers its type
 
     /**
@@ -32,7 +33,7 @@ public class NFAState extends State{
 
     private void initDefault(String name ){
         this.name = name;
-        delta = new HashMap<Character, NFAState>();
+        this.delta = new HashMap<Character, HashSet<NFAState>>();
     }
 
     /**
@@ -40,7 +41,7 @@ public class NFAState extends State{
      * @return true if final and false otherwise
      */
     public boolean isFinal(){
-        return isFinal;
+        return this.isFinal;
     }
 
 
@@ -50,6 +51,7 @@ public class NFAState extends State{
      * @param toState to DFA state
      */
     public void addTransition(char onSymb, NFAState toState){
+        HashSet<NFAState>
         delta.put(onSymb, toState);
     }
 
@@ -59,13 +61,14 @@ public class NFAState extends State{
      * @param symb - the alphabet symbol
      * @return the new state
      */
-    public NFAState getTo(char symb){
-        NFAState ret = delta.get(symb);
+    public HashSet<NFAState> getTo(char symb){
+        HashSet<NFAState> ret = delta.get(symb);
         if(ret == null){
-            System.err.println("ERROR: DFAState.getTo(char symb) returns null on " + symb + " from " + name);
-            System.exit(2);
+            return new HashSet<NFAState>();
         }
-        return delta.get(symb);
+        else{
+            return ret;
+        }
     }
 
 }

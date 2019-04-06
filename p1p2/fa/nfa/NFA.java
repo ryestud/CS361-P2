@@ -23,7 +23,7 @@ public class NFA implements NFAInterface{
      */
     @Override
     public Set<NFAState> getToState(NFAState from, char onSymb) {
-        return null;
+        return from.getTo(onSymb);
     }
 
     /**
@@ -34,7 +34,11 @@ public class NFA implements NFAInterface{
      * @return set of states that can be reached from s on epsilon trans.
      */
     @Override
-    public Set<NFAState> eClosure(NFAState s) {
+    public Set<NFAState> eClosure(NFAState s)
+    {
+        NFA nfa = new NFA();
+//        what you can reach with "e"
+//        set of states
         return null;
     }
 
@@ -86,7 +90,8 @@ public class NFA implements NFAInterface{
      * @return a set of states that FA has
      */
     @Override
-    public Set<? extends State> getStates() {
+    public Set<? extends State> getStates()
+    {
         return null;
     }
 
@@ -96,7 +101,8 @@ public class NFA implements NFAInterface{
      * @return a set of final states that FA has
      */
     @Override
-    public Set<? extends State> getFinalStates() {
+    public Set<? extends State> getFinalStates()
+    {
         return null;
     }
 
@@ -106,7 +112,8 @@ public class NFA implements NFAInterface{
      * @return the start state of FA
      */
     @Override
-    public State getStartState() {
+    public State getStartState()
+    {
         return null;
     }
 
@@ -116,7 +123,8 @@ public class NFA implements NFAInterface{
      * @return the alphabet of FA
      */
     @Override
-    public Set<Character> getABC() {
+    public Set<Character> getABC()
+    {
         return null;
     }
 }
