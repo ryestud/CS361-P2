@@ -35,23 +35,43 @@ public class NFA implements NFAInterface{
      */
     @Override
     public Set<NFAState> getToState(NFAState from, char onSymb) {
-        return from.getTo(onSymb);
+        Set<NFAState> ret = from.getTo(onSymb);
+        return ret;
     }
 
     /**
      * Traverses all epsilon transitions and determine
      * what states can be reached from s through e
      *
-     * @param s
+     * @param state
      * @return set of states that can be reached from s on epsilon trans.
      */
     @Override
-    public Set<NFAState> eClosure(NFAState s)
+    public Set<NFAState> eClosure(NFAState state)
     {
-        NFA nfa = new NFA();
+        Set<NFAState> nfa = new LinkedHashSet<>();
+        Set<NFAState> ret = null;
+        ret = DFS(state,nfa);
 //        what you can reach with "e"
 //        set of states
-        return null;
+        return ret;
+    }
+
+    public Set<NFAState> DFS(NFAState state, Set<NFAState> closure){
+        Set<NFAState> ret = new LinkedHashSet<>();
+        Set<NFAState> visitedStates = closure;
+        ret.add(state);
+        return getDFS(visitedStates,state,ret);
+    }
+
+    private Set<NFAState> getDFS(Set<NFAState> visitedStates, NFAState state, Set<NFAState> ret) {
+        if(!state.getTo('e').isEmpty() && !visitedStates.contains(state)){
+            visitedStates.add(state);
+            for(NFAState fromNFA : state.getTo('e')){
+                ret.addAll(DFS(fromNFA, visitedStates));
+            }
+        }
+        return ret;
     }
 
     /**
@@ -61,24 +81,23 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addStartState(String name) {
-        NFAState s = checkIfExists(name);
+        NFAState state = checkIfExists(name);
+        if(state != null){
+            state = new NFAState(name);
+            addState(state);
+        }
+        start = state;
     }
 
     @Override
     public void addState(String name) {
-
-    }
-
-    private NFAState checkIfExists(String name) {
-        NFAState ret = null;
-        for(NFAState s : states){
-            if(s.getName().equals(name)){
-                ret = s;
-                break;
-            }
+        if( name != null) {
+            NFAState newState = new NFAState(name);
+            addState(newState);
         }
-        return ret;
     }
+
+
 
     /**
      * Adds a non-final, not initial state to the NFA instance
@@ -114,8 +133,33 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addTransition(String fromState, char onSymb, String toState) {
-
+        (checkIfExists(fromState)).addTransition(onSymb,checkIfExists(toState));
+        if(sigma.contains(onSymb) && onSymb != 'e'){
+            sigma.add(onSymb);
+        }
     }
+
+    private NFAState checkIfExists(String name) {
+        NFAState ret = null;
+        for(NFAState s : states){
+            if(s.getName().equals(name)){
+                ret = s;
+                break;
+            }
+        }
+        return ret;
+    }
+
+//    public NFAState getState(String name){
+//        NFAState ret = new NFAState(name);
+//        for(NFAState state : states){
+//            if(name.equals(state.getName())){
+//                ret = state;
+//                return ret;
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Getter for Q
