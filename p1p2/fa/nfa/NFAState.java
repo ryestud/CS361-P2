@@ -51,8 +51,8 @@ public class NFAState extends State{
      * @param toState to DFA state
      */
     public void addTransition(char onSymb, NFAState toState){
-        HashSet<NFAState>
-        delta.put(onSymb, toState);
+//        HashSet<NFAState>
+//        delta.put(onSymb, toState);
     }
 
     /**
