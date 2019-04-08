@@ -3,9 +3,21 @@ package fa.nfa;
 import fa.State;
 import fa.dfa.DFA;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class NFA implements NFAInterface{
+    private Set<NFAState> states;
+    private NFAState start;
+    private Set<Character> sigma;
+
+
+    public NFA(){
+        states = new LinkedHashSet<NFAState>();
+        sigma = new LinkedHashSet<Character>();
+    }
+
+
     /**
      * @return equivalent DFA
      */
@@ -49,27 +61,48 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addStartState(String name) {
-
+        NFAState s = checkIfExists(name);
     }
 
-    /**
-     * Adds a non-final, not initial state to the DFA instance
-     *
-     * @param name is the label of the state
-     */
     @Override
     public void addState(String name) {
 
     }
 
+    private NFAState checkIfExists(String name) {
+        NFAState ret = null;
+        for(NFAState s : states){
+            if(s.getName().equals(name)){
+                ret = s;
+                break;
+            }
+        }
+        return ret;
+    }
+
     /**
-     * Adds a final state to the DFA
+     * Adds a non-final, not initial state to the NFA instance
+     *
+     * @param name is the label of the state
+     */
+    public void addState(NFAState name) {
+        states.add(name);
+    }
+
+    /**
+     * Adds a final state to the NFA
      *
      * @param name is the label of the state
      */
     @Override
     public void addFinalState(String name) {
-
+        NFAState s = checkIfExists(name);
+        if( s == null){
+            s = new NFAState(name, true);
+            addState(s);
+        } else {
+            System.out.println("WARNING: A state with name " + name + " already exists in the DFA");
+        }
     }
 
     /**
@@ -90,20 +123,26 @@ public class NFA implements NFAInterface{
      * @return a set of states that FA has
      */
     @Override
-    public Set<? extends State> getStates()
+    public Set<NFAState> getStates()
     {
-        return null;
+        return states;
     }
 
     /**
      * Getter for F
-     *
+     * Set< ? extends State>
      * @return a set of final states that FA has
      */
     @Override
-    public Set<? extends State> getFinalStates()
+    public Set<NFAState> getFinalStates()
     {
-        return null;
+        Set<NFAState> ret = new LinkedHashSet<NFAState>();
+        for(NFAState s : states){
+            if(s.isFinal()){
+                ret.add(s);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -114,7 +153,7 @@ public class NFA implements NFAInterface{
     @Override
     public State getStartState()
     {
-        return null;
+        return start;
     }
 
     /**
@@ -125,6 +164,6 @@ public class NFA implements NFAInterface{
     @Override
     public Set<Character> getABC()
     {
-        return null;
+        return sigma;
     }
 }

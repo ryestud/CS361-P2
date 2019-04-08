@@ -17,8 +17,8 @@ public class NFAState extends State{
      * @param name the state name
      */
     public NFAState(String name){
-        initDefault(name);
-        isFinal = false;
+        this.delta = new HashMap<Character, HashSet<NFAState>>();
+        this.name = name;
     }
 
     /**
@@ -27,14 +27,12 @@ public class NFAState extends State{
      * @param isFinal the type of state: true - final, false - nonfinal.
      */
     public NFAState(String name, boolean isFinal){
-        initDefault(name);
+        this.delta = new HashMap<Character, HashSet<NFAState>>();
+        this.name = name;
         this.isFinal = isFinal;
     }
 
-    private void initDefault(String name ){
-        this.name = name;
-        this.delta = new HashMap<Character, HashSet<NFAState>>();
-    }
+
 
     /**
      * Accessor for the state type
@@ -51,8 +49,17 @@ public class NFAState extends State{
      * @param toState to DFA state
      */
     public void addTransition(char onSymb, NFAState toState){
-//        HashSet<NFAState>
-//        delta.put(onSymb, toState);
+        HashSet<NFAState> transitionSymbol = delta.get(onSymb);
+        if(transitionSymbol == null){
+            transitionSymbol = new HashSet<NFAState>();
+            transitionSymbol.add(toState);
+            delta.put(onSymb, transitionSymbol);
+        }
+        else if(transitionSymbol != null){
+            transitionSymbol.add(toState);
+            delta.put(onSymb, transitionSymbol);
+        }
+
     }
 
     /**
@@ -67,7 +74,7 @@ public class NFAState extends State{
             return new HashSet<NFAState>();
         }
         else{
-            return ret;
+            return delta.get(symb);
         }
     }
 
