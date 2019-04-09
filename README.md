@@ -73,6 +73,7 @@ Help with DFS:
 ```
 * Class notes from CS321
 * [How to implement DFS](https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/)
+* sudocode from Elena for getDFA
 ```
 
 ----------

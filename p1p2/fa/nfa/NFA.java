@@ -2,6 +2,7 @@ package fa.nfa;
 
 import fa.State;
 import fa.dfa.DFA;
+import fa.dfa.DFAState;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -56,7 +57,7 @@ public class NFA implements NFAInterface{
                     HashSet<NFAState> trans = state.getTo(symbol);
                     if (trans != null){
                         for (NFAState transition : trans){
-                             closureSet = nfaStates;
+                             this.closureSet = nfaStates;
                             eClosure(transition);
                             if (transition.isFinal()){
                                 isFinished = true;
@@ -139,13 +140,13 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addFinalState(String name) {
-        NFAState state = checkIfExists(name);
-        if( state == null){
-            state = new NFAState(name, true);
+        NFAState state = new NFAState(name,true);
+//        if( state == null){
+//            state = new NFAState(name, true);
             addState(state);
-        } else {
-            System.out.println("WARNING: A state with name " + name + " already exists in the NFA");
-        }
+//        } else {
+//            System.out.println("WARNING: A state with name " + name + " already exists in the NFA");
+//        }
     }
 
     /**
@@ -155,12 +156,15 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addStartState(String name) {
-        NFAState state = checkIfExists(name);
+        NFAState state = new NFAState(name);
         if(state != null){
             state = new NFAState(name);
             addState(state);
         }
-        start = state;
+        else{
+            start = state;
+        }
+
     }
 
     @Override
@@ -193,7 +197,7 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addTransition(String fromState, char onSymb, String toState) {
-        (checkIfExists(fromState)).addTransition(onSymb,checkIfExists(toState));
+        checkIfExists(fromState).addTransition(onSymb,checkIfExists(toState));
         if(!sigma.contains(onSymb) && onSymb != 'e'){
             sigma.add(onSymb);
         }
@@ -201,8 +205,8 @@ public class NFA implements NFAInterface{
 
     private NFAState checkIfExists(String name) {
         NFAState ret = null;
-        for(NFAState stateL : states){
-            if(name.equals(stateL.getName())){
+        for(NFAState stateL : this.states){
+            if(stateL.getName().equals(name)){
                 ret = stateL;
                 break;
             }
