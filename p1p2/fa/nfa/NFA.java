@@ -34,7 +34,7 @@ public class NFA implements NFAInterface{
         boolean isFinished = false;
         Set<NFAState> closureState = eClosure(this.start);
         LinkedList<HashSet<NFAState>> queue = new LinkedList<HashSet<NFAState>>();
-        Set<Set<NFAState>> holder = new HashSet<>();
+        Set<Set<NFAState>> holder = new HashSet<Set<NFAState>>();
         HashSet<NFAState> nfaStates = new HashSet<NFAState>();
         nfaStates.add(this.start);
         nfaStates.addAll(closureState);
@@ -48,21 +48,23 @@ public class NFA implements NFAInterface{
         queue.add(nfaStates);
         dfa.addStartState(nfaStates.toString());
         while(!queue.isEmpty()){
-            Set<NFAState> current = queue.removeLast();
+            Set<NFAState> current = queue.remove();
             holder.add(current);
             String currentSet = current.toString();
-            for (char symbol : sigma){
+            for (char symbol : this.sigma){
                 isFinished = false;
                 HashSet<NFAState> newStateSet = new HashSet<NFAState>();
                 for (NFAState state : newStateSet){
                     HashSet<NFAState> trans = state.getTo(symbol);
                     if (trans != null){
                         for (NFAState transition : trans){
-                             this.closureSet = nfaStates;
+//                             this.closureSet = nfaStates;
+                             this.closureSet = newStateSet;
                             eClosure(transition);
                             if (transition.isFinal()){
                                 isFinished = true;
                             }
+                            //building state name
                             nfaStates.add(transition);
                         }
                     }
@@ -108,11 +110,14 @@ public class NFA implements NFAInterface{
     @Override
     public Set<NFAState> eClosure(NFAState state)
     {
-        if(!state.getTo('e').equals(new HashSet<NFAState>())){
+        Set<NFAState> temp = new LinkedHashSet<>();
+        Set<NFAState> statesVisited = new LinkedHashSet<>();
+//        if(!state.getTo('e').equals(new LinkedHashSet<NFAState>())){
+        if(!state.getTo('e').isEmpty() && !statesVisited.contains(state)){
             for(NFAState fromNFA : state.getTo('e')){
-                if(!this.closureSet.contains(state)) {
-                    this.closureSet.add(state);
-                    eClosure(state);
+                if(!this.closureSet.contains(fromNFA)) {
+                    this.closureSet.add(fromNFA);
+                    eClosure(fromNFA);
                 }
             }
         }
@@ -152,6 +157,9 @@ public class NFA implements NFAInterface{
         NFAState state = new NFAState(name,true);
 //        if( state == null){
 //            state = new NFAState(name, true);
+//        if(states.contains(name)){
+//
+//        }
             addState(state);
 //        } else {
 //            System.out.println("WARNING: A state with name " + name + " already exists in the NFA");
