@@ -5,6 +5,8 @@ import fa.dfa.DFA;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class NFA implements NFAInterface{
     private Set<NFAState> states;
@@ -23,7 +25,59 @@ public class NFA implements NFAInterface{
      */
     @Override
     public DFA getDFA() {
-        return null;
+        DFA dfa = new DFA();
+        boolean isFinished = false;
+        Set<NFAState> closureState = eClosure(start);
+        LinkedList<HashSet<NFAState>> queue = new LinkedList<HashSet<NFAState>>();
+        Set<Set<NFAState>> holder = new HashSet<>();
+        HashSet<NFAState> newSet = new HashSet<NFAState>();
+        newSet.add(start);
+        newSet.addAll(eClosure(start));
+        for (NFAState state : newSet) {
+            if (state.isFinal()){
+                isFinished = true;
+            }
+        } if (isFinished == true){
+            dfa.addFinalState(newSet.toString());
+        }
+        dfa.addStartState(newSet.toString());
+        queue.addFirst(newSet);
+        while(!queue.isEmpty()){
+            Set<NFAState> current = queue.removeLast();
+            holder.add(current);
+            String currentSet = current.toString();
+            for (char symbol : sigma){
+                isFinished = false;
+                HashSet<NFAState> newStateSet = new HashSet<NFAState>();
+                for (NFAState state : currState){
+                    HashSet<NFAState> trans = state.getTo(symbol);
+                    if (trans != null){
+                        for (NFAState transition : trans){
+                            this.eps = newSet;
+                            eClosure(transition);
+                            if (transition.isFinal()){
+                                isFinished = true;
+                            }
+                            newSet.add(transition);
+                        }
+                    }
+                }
+                String name = newSet.toString();
+                if (isFinished == true){
+                    if (!holder.contains(newSet) && !queue.contains(newSet)){
+                        dfa.addFinalState(name);
+                    }
+                    dfa.addTransition(currentSet, symbol, name);
+                } else if (!temp.contains(newSet) && !queue.contains(newSet)){
+                    dfa.addState(name);
+                }
+                dfa.addTransition(currentSet, symbol, name);
+                if (!temp.contains(newSet) && !queue.contains(newSet)){
+                    queue.addFirst(newSet);
+                }
+            }
+        }
+        return dfa;
     }
 
     /**
@@ -141,10 +195,10 @@ public class NFA implements NFAInterface{
 
     private NFAState checkIfExists(String name) {
         NFAState ret = null;
-        for(NFAState s : states){
-            if(s.getName().equals(name)){
-                ret = s;
-                break;
+        for(NFAState state : states){
+            if(state.getName()==(name)){
+                ret = state;
+                return ret;
             }
         }
         return ret;
