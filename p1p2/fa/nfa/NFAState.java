@@ -4,11 +4,12 @@ import fa.State;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class NFAState extends State{
 
-    private HashMap<Character,NFAState> delta;//delta
+    private HashMap<Character,HashSet<NFAState>> delta;//delta
     private boolean isFinal;//remembers its type
 
     /**
@@ -16,8 +17,8 @@ public class NFAState extends State{
      * @param name the state name
      */
     public NFAState(String name){
-        initDefault(name);
-        isFinal = false;
+        this.delta = new HashMap<Character, HashSet<NFAState>>();
+        this.name = name;
     }
 
     /**
@@ -26,21 +27,19 @@ public class NFAState extends State{
      * @param isFinal the type of state: true - final, false - nonfinal.
      */
     public NFAState(String name, boolean isFinal){
-        initDefault(name);
+        this.delta = new HashMap<Character, HashSet<NFAState>>();
+        this.name = name;
         this.isFinal = isFinal;
     }
 
-    private void initDefault(String name ){
-        this.name = name;
-        delta = new HashMap<Character, NFAState>();
-    }
+
 
     /**
      * Accessor for the state type
      * @return true if final and false otherwise
      */
     public boolean isFinal(){
-        return isFinal;
+        return this.isFinal;
     }
 
 
@@ -50,7 +49,12 @@ public class NFAState extends State{
      * @param toState to DFA state
      */
     public void addTransition(char onSymb, NFAState toState){
-        delta.put(onSymb, toState);
+        HashSet<NFAState> transitionSymbol = delta.get(onSymb);
+        if(transitionSymbol == null){
+            transitionSymbol = new HashSet<NFAState>();
+        }
+        transitionSymbol.add(toState);
+        delta.put(onSymb, transitionSymbol);
     }
 
     /**
@@ -59,13 +63,14 @@ public class NFAState extends State{
      * @param symb - the alphabet symbol
      * @return the new state
      */
-    public NFAState getTo(char symb){
-        NFAState ret = delta.get(symb);
+    public HashSet<NFAState> getTo(char symb){
+        HashSet<NFAState> ret = delta.get(symb);
         if(ret == null){
-            System.err.println("ERROR: DFAState.getTo(char symb) returns null on " + symb + " from " + name);
-            System.exit(2);
+            return new HashSet<NFAState>();
         }
-        return delta.get(symb);
+        else{
+            return delta.get(symb);
+        }
     }
 
 }
