@@ -52,14 +52,9 @@ public class NFAState extends State{
         HashSet<NFAState> transitionSymbol = delta.get(onSymb);
         if(transitionSymbol == null){
             transitionSymbol = new HashSet<NFAState>();
-            transitionSymbol.add(toState);
-            delta.put(onSymb, transitionSymbol);
         }
-        else if(transitionSymbol != null){
-            transitionSymbol.add(toState);
-            delta.put(onSymb, transitionSymbol);
-        }
-
+        transitionSymbol.add(toState);
+        delta.put(onSymb, transitionSymbol);
     }
 
     /**
