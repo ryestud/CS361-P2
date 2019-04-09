@@ -21,6 +21,7 @@ public class NFA implements NFAInterface{
     public NFA(){
         states = new LinkedHashSet<NFAState>();
         sigma = new LinkedHashSet<Character>();
+        closureSet = new LinkedHashSet<NFAState>();
     }
 
 
@@ -31,11 +32,11 @@ public class NFA implements NFAInterface{
     public DFA getDFA() {
         DFA dfa = new DFA();
         boolean isFinished = false;
-        Set<NFAState> closureState = eClosure(start);
+        Set<NFAState> closureState = eClosure(this.start);
         LinkedList<HashSet<NFAState>> queue = new LinkedList<HashSet<NFAState>>();
         Set<Set<NFAState>> holder = new HashSet<>();
         HashSet<NFAState> nfaStates = new HashSet<NFAState>();
-        nfaStates.add(start);
+        nfaStates.add(this.start);
         nfaStates.addAll(closureState);
         for (NFAState state : nfaStates) {
             if (state.isFinal()){
@@ -99,38 +100,46 @@ public class NFA implements NFAInterface{
 
     /**
      * Traverses all epsilon transitions and determine
-     * what states can be reached from s through e
+     * what states can be reached from state through e
      *
      * @param state
-     * @return set of states that can be reached from s on epsilon trans.
+     * @return set of states that can be reached from state on epsilon trans.
      */
     @Override
     public Set<NFAState> eClosure(NFAState state)
     {
-        Set<NFAState> nfa = new LinkedHashSet<>();
-        Set<NFAState> ret = null;
-        ret = DFS(state,nfa);
-//        what you can reach with "e"
-//        set of states
-        return ret;
-    }
-
-    public Set<NFAState> DFS(NFAState state, Set<NFAState> closure){
-        Set<NFAState> ret = new LinkedHashSet<>();
-        closureSet = closure;
-        ret.add(state);
-        return getDFS(closureSet,state,ret);
-    }
-
-    private Set<NFAState> getDFS(Set<NFAState> visitedStates, NFAState state, Set<NFAState> ret) {
-        if(!state.getTo('e').isEmpty() && !visitedStates.contains(state)){
-            visitedStates.add(state);
+        if(!state.getTo('e').equals(new HashSet<NFAState>())){
             for(NFAState fromNFA : state.getTo('e')){
-                ret.addAll(DFS(fromNFA, visitedStates));
+                if(!this.closureSet.contains(state)) {
+                    this.closureSet.add(state);
+                    eClosure(state);
+                }
             }
         }
-        return ret;
+        else{
+            this.closureSet.add(state);
+        }
+//        what you can reach with "e"
+//        set of states
+        return this.closureSet;
     }
+//
+//    public Set<NFAState> DFS(NFAState state, Set<NFAState> closure){
+//        Set<NFAState> ret = new LinkedHashSet<>();
+//        closureSet = closure;
+//        ret.add(state);
+//        return getDFS(closureSet,state,ret);
+//    }
+//
+//    private Set<NFAState> getDFS(Set<NFAState> visitedStates, NFAState state, Set<NFAState> ret) {
+//        if(!state.getTo('e').isEmpty() && !visitedStates.contains(state)){
+//            visitedStates.add(state);
+//            for(NFAState fromNFA : state.getTo('e')){
+//                ret.addAll(DFS(fromNFA, visitedStates));
+//            }
+//        }
+//        return ret;
+//    }
 
 
     /**
@@ -156,15 +165,20 @@ public class NFA implements NFAInterface{
      */
     @Override
     public void addStartState(String name) {
-        NFAState state = new NFAState(name);
-        if(state != null){
-            state = new NFAState(name);
-            addState(state);
+//        NFAState state = checkIfExists(name);
+//        start = checkIfExists(name);
+        start = new NFAState(name);
+        if(start != null){
+            //check
+            if(states.contains(start)){
+//                state = new NFAState(name);
+                addState(start);
+            }
+            else{
+//            this.start = state;
+                addState(start);
+            }
         }
-        else{
-            start = state;
-        }
-
     }
 
     @Override
@@ -261,7 +275,7 @@ public class NFA implements NFAInterface{
     @Override
     public State getStartState()
     {
-        return start;
+        return this.start;
     }
 
     /**
